@@ -1,4 +1,4 @@
-package main.playground;
+package playground;
 
 public class JavaPlayground {
   public static void main (String[] args){

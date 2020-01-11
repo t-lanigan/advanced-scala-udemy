@@ -1,4 +1,4 @@
-package main.lectures.part1as
+package lectures.part1as
 import scala.util.Try
 
 object DarkSugars extends App {
