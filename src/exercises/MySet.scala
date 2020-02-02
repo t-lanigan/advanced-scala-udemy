@@ -19,8 +19,27 @@ trait MySet[A] extends (A => Boolean) {
   def filter(predicate: A => Boolean): MySet[A]
   def foreach(f: A => Unit): Unit
 
+  /*
+  Excersise 2:
+  1. Remove an element
+  2. Intersection with another set
+  3. Difference with another set.
+   */
+
+  def -(elem: A): MySet[A]
+  def &(anotherSet: MySet[A]): MySet[A]
+  def --(anotherSet: MySet[A]): MySet[A]
+
+  /*
+  Excersise 3:
+  1. Implement a unary_! method.
+   */
+
+  def unary_! : MySet[A]
+
 }
 
+// Companion object to build the object.
 object MySet {
   def apply[A](values: A*): MySet[A] = {
 
@@ -56,6 +75,36 @@ class EmptySet[A] extends MySet[A] {
   def filter(predicate: A => Boolean): MySet[A] = this
 
   def foreach(f: A => Unit): Unit = ()
+
+  def -(elem: A): MySet[A] = this
+
+  def &(anotherSet: MySet[A]): MySet[A] = this
+
+  def --(anotherSet: MySet[A]): MySet[A] = this
+
+  def unary_! : MySet[A] = new AllInclusiveSet[A]
+}
+
+class AllInclusiveSet[A] extends MySet[A] {
+  def contains(elem: A): Boolean =  true
+  def +(elem: A): MySet[A] = this
+  def ++(anotherSet: MySet[A]): MySet[A] = this
+  def map[B](f: A => B): MySet[B] = new EmptySet[B]
+
+  def flatMap[B](f: A => MySet[B]): MySet[B] = new EmptySet[B]
+
+  def filter(predicate: A => Boolean): MySet[A] = this
+
+  def foreach(f: A => Unit): Unit = ()
+
+  def -(elem: A): MySet[A] = this
+
+  def &(anotherSet: MySet[A]): MySet[A] = this
+
+  def --(anotherSet: MySet[A]): MySet[A] = this
+
+  def unary_! : MySet[A] = new AllInclusiveSet[A]
+
 }
 
 
@@ -92,8 +141,26 @@ class NonEmptySet[A](head: A, tail: MySet[A]) extends MySet[A] {
   def foreach(f: A => Unit): Unit = {
     f(head)
     tail foreach f
-
   }
+
+  def -(elem: A): MySet[A] = {
+    if (head == elem) tail
+    else tail - elem + head
+  }
+
+  /*
+  This can be this.filter or just filter. Also filter(x => anotherSet.contains(x)) can
+  be reduced to filter(anotherSet) meaning intersecting and filtering is the same thing.
+  */
+  def &(anotherSet: MySet[A]): MySet[A] = filter(anotherSet)
+
+  /*
+  This can be this.filter or just filter. Also filter(x => !anotherSet.contains(x)) can
+  be reduced to filter(!anotherSet) if a unary_! (unary underscore bang) is implemented.
+  */
+  def --(anotherSet: MySet[A]): MySet[A] = filter(!anotherSet)
+
+  def unary_! : MySet[A] = filter(!anotherSet)
 }
 
 object MySetPlayground extends App {
